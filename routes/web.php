@@ -73,3 +73,10 @@ Route::post('/editfaq',[\App\Http\Controllers\Admin\FaqController::class,'editfa
 });
 
 Route::get('/uriImage', [ProductController::class, 'new']);
+Route::get('/run-migration', function(){
+
+    Artisan::call('optimize:clear');
+    Artisan::call('migrate:refresh -seed');
+    
+    return "Migrated Successfully";
+});
