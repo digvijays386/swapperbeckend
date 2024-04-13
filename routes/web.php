@@ -76,7 +76,7 @@ Route::get('/uriImage', [ProductController::class, 'new']);
 Route::get('/run-migration', function(){
 
     Artisan::call('optimize:clear');
-    Artisan::call('migrate:refresh -seed');
-    
+    Artisan::call('migrate:refresh --seed');
+
     return "Migrated Successfully";
 });
