@@ -176,8 +176,9 @@ class AuthController extends Controller
         if ($user) {
             if (Hash::Check($request->password, $user->password)) {
                 $interest = UserIntrest_pivot::where('user_id', $user->id)->get();
-
+                dd('user found');
                 $token = $user->createToken('LaravelAuthApp')->accessToken;
+                dd('token created');
                 if (count($interest) > 0)
                     $interestStatus = true;
                 else
