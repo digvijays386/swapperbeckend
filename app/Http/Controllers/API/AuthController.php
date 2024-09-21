@@ -170,21 +170,14 @@ class AuthController extends Controller
     public function login(Request $request)
     {
 
-        Log::info('request from mobile.', $request);
-
         $description = "Verification code ";
         $otp = rand(1111, 9999);
         $user = User::where('email', $request->email)->first();
 
-        Log::info('User found failed to login.', ['id' => $user->id]);
         if ($user) {
             if (Hash::Check($request->password, $user->password)) {
                 $interest = UserIntrest_pivot::where('user_id', $user->id)->get();
-                Log::info('User {id} failed to login.', ['id' => $user->id]);
-
                 $token = $user->createToken('LaravelAuthApp')->accessToken;
-
-                Log::info('failed to login access token.', ['id' => $request]);
 
                 if (count($interest) > 0)
                     $interestStatus = true;
@@ -212,7 +205,6 @@ class AuthController extends Controller
                     'error' => False
 
                 ]);
-                Log::info('not reached to response.', $user);
 
             } else {
                 return response()->json([
