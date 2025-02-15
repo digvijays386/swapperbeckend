@@ -15,8 +15,9 @@ class CreateSwapsTable extends Migration
     {
         Schema::create('swaps', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('swap_id')->unsigned();
+            $table->foreignId('sender_id')->constrained('users'); // Correctly defined
+            $table->foreignId('recipient_id')->constrained('users'); // Correctly defined
+            $table->enum('status', ['pending', 'accepted', 'rejected', 'cancelled', 'completed'])->default('pending'); // Correctly defined
             $table->timestamps();
         });
     }

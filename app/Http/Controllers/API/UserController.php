@@ -156,6 +156,60 @@ class UserController extends Controller
             return response()->json(['message' => 'swaped successfully!', 'match' => false], 200);
         }
     }
+
+
+    public function getSwappedItems($userId)
+{
+    $swappedItemIds = SwapItem::whereHas('swap', function ($query) {
+        $query->where('status', 'completed');
+    })->where(function($query) use ($userId){
+        $query->whereHas('swap', function ($query) use ($userId){
+            $query->where('sender_id', $userId);
+        })->where('type','requested');
+    })->orWhere(function($query) use ($userId){
+        $query->whereHas('swap', function ($query) use ($userId){
+            $query->where('recipient_id', $userId);
+        })->where('type','offered');
+    })->pluck('product_id');
+
+    $swappedItems = Product::whereIn('id', $swappedItemIds)->get();
+
+    return response()->json($swappedItems, $swappedItems->isEmpty() ? 204 : 200);
+}
+
+
+public function getSwapHistory(Request $request, $userId)
+{
+    $query = Swap::query();
+    $query->where(function($query) use ($userId){
+        $query->where('sender_id', $userId)->orWhere('recipient_id', $userId);
+    });
+
+    if ($request->has('status')) {
+        $query->where('status', $request->status);
+    }
+    if ($request->has('type')) {
+        if ($request->type == 'sent') {
+            $query->where('sender_id', $userId);
+        } else if ($request->type == 'received') {
+            $query->where('recipient_id', $userId);
+        }
+    }
+
+    if ($request->has('from')) {
+        $query->where('created_at', '>=', $request->from);
+    }
+
+    if ($request->has('to')) {
+        $query->where('created_at', '<=', $request->to);
+    }
+
+    $swaps = $query->get();
+
+    return response()->json($swaps, $swaps->isEmpty() ? 204 : 200);
+}
+
+
     function unique_code($limit)
     {
         return substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, $limit);

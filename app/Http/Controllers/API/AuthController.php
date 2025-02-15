@@ -114,7 +114,8 @@ class AuthController extends Controller
                         $file->move($destinationPath, $file_name);
                     // }
                 }
-                Mail::to($request->email)->send(new OtpMail($description . $otp));
+                // digvijay made this change uncomment this and fix mailhog issue
+                // Mail::to($request->email)->send(new OtpMail($description . $otp));
                 $user = User::where('email', $request->email)->create([
                     'email_otp' => $otp,
                     'name' => $request->name,

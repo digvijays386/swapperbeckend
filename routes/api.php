@@ -6,6 +6,7 @@ use App\Http\Controllers\API\IntrestController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\api\UserSwapController;
+use App\Http\Controllers\api\SwapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +74,21 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::get('get/auth/interest', [IntrestController::class, 'authInterests']);
     Route::get('get/outgoing/swaps', [UserSwapController::class, 'getOutgoingSwaps']);
+
+
+    //new swap apis
+    Route::prefix('swaps')->group(function () {
+        Route::post('/', [SwapController::class, 'store'])->name('swaps.store');
+        Route::get('/', [SwapController::class, 'index'])->name('swaps.index');
+        Route::patch('/{swap}', [SwapController::class, 'update'])->name('swaps.update');
+    });
+    
+    Route::prefix('users/{user}')->group(function () {
+        Route::get('swapped-items', [UserController::class, 'getSwappedItems'])->name('users.swapped-items');
+        Route::get('swaps', [UserController::class, 'getSwapHistory'])->name('users.swaps');
+    });
+    
+    Route::post('/notifications', [NotificationController::class, 'send'])->name('notifications.send'); // Or use the service directly
 });
 
 //FAQ
